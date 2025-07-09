@@ -30,12 +30,7 @@ RUN dnf -y install 'dnf5-command(copr)' && \
     dnf -y install \
         grubby \
         NetworkManager-tui \
+        default-flatpaks \
         vim && \
-    dnf -y install \
-        fedora-flathub-remote \
-        fedora-third-party \
-        default-flatpaks && \
-    fedora-third-party enable && \
-    systemctl --user enable default-flatpaks.service && \
     dnf clean all && \
     bootc container lint
