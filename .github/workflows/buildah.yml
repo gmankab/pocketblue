@@ -1,0 +1,86 @@
+on:
+  workflow_dispatch: {}
+  push: {}
+
+jobs:
+  build:
+    name: build containers ${{ matrix.from_tag }}
+    runs-on: ubuntu-24.04-arm
+    permissions:
+      packages: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - from_tag: rawhide
+            push_tags: rawhide
+          - from_tag: '42'
+            push_tags: 42 latest
+    env:
+      from_tag:          ${{ matrix.from_tag }}
+      push_tags:         ${{ matrix.push_tags }}
+      registry:          ${{ vars.registry }}
+      registry_username: ${{ vars.registry_username }}
+      registry_token:    ${{ secrets.registry_token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: base
+        uses: ./.github/actions/build
+        with:
+          from: quay.io/fedora/fedora-bootc
+          image: base
+          containerfile: base/Containerfile
+
+      - name: oneplus6-base
+        uses: ./.github/actions/build
+        with:
+          from: localhost/base
+          image: oneplus6-base
+          containerfile: devices/oneplus6/Containerfile
+      - name: mipad5-base
+        uses: ./.github/actions/build
+        with:
+          from: localhost/base
+          image: mipad5-base
+          containerfile: devices/mipad5/Containerfile
+
+      - name: oneplus6-gnome-mobile
+        uses: ./.github/actions/build
+        with:
+          from: localhost/oneplus6-base
+          image: oneplus6-gnome-mobile
+          containerfile: desktops/gnome-mobile/Containerfile
+      - name: oneplus6-gnome-desktop
+        uses: ./.github/actions/build
+        with:
+          from: localhost/oneplus6-base
+          image: oneplus6-gnome-desktop
+          containerfile: desktops/gnome-desktop/Containerfile
+      - name: oneplus6-phosh
+        uses: ./.github/actions/build
+        with:
+          from: localhost/oneplus6-base
+          image: oneplus6-phosh
+          containerfile: desktops/phosh/Containerfile
+
+      - name: mipad5-gnome-mobile
+        uses: ./.github/actions/build
+        with:
+          from: localhost/mipad5-base
+          image: mipad5-gnome-mobile
+          containerfile: desktops/gnome-mobile/Containerfile
+      - name: mipad5-gnome-desktop
+        uses: ./.github/actions/build
+        with:
+          from: localhost/mipad5-base
+          image: mipad5-gnome-desktop
+          containerfile: desktops/gnome-desktop/Containerfile
+      - name: mipad5-phosh
+        uses: ./.github/actions/build
+        with:
+          from: localhost/mipad5-base
+          image: mipad5-phosh
+          containerfile: desktops/phosh/Containerfile

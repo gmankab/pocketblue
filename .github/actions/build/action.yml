@@ -1,0 +1,34 @@
+name: build
+description: build a container
+
+inputs:
+  from:
+    description: from image
+    required: true
+  image:
+    description: image name
+    required: true
+  containerfile:
+    description: containerfile
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - id: getcontext
+      shell: bash
+      run: echo "context=$(dirname ${{ inputs.containerfile }})" >> $GITHUB_OUTPUT
+    - uses: redhat-actions/buildah-build@v2
+      with:
+        build-args: from=${{ inputs.from }}:${{ env.from_tag }}
+        image: ${{ inputs.image }}
+        context: ${{ steps.getcontext.outputs.context }}
+        containerfiles: ${{ inputs.containerfile }}
+        tags: ${{ env.push_tags }}
+    - uses: redhat-actions/push-to-registry@v2
+      with:
+        image: ${{ inputs.image }}
+        tags: ${{ env.push_tags }}
+        registry: ${{ env.registry }}
+        username: ${{ env.registry_username }}
+        password: ${{ env.registry_token }}
