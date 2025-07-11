@@ -20,15 +20,15 @@ runs:
       run: echo "context=$(dirname ${{ inputs.containerfile }})" >> $GITHUB_OUTPUT
     - uses: redhat-actions/buildah-build@v2
       with:
-        build-args: from=${{ inputs.from }}:${{ env.from_tag }}
+        build-args: from=${{ inputs.from }}:${{ env.FROM_TAG }}
         image: ${{ inputs.image }}
         context: ${{ steps.getcontext.outputs.context }}
         containerfiles: ${{ inputs.containerfile }}
-        tags: ${{ env.push_tags }}
+        tags: ${{ env.PUSH_TAGS }}
     - uses: redhat-actions/push-to-registry@v2
       with:
         image: ${{ inputs.image }}
-        tags: ${{ env.push_tags }}
-        registry: ${{ env.registry }}
-        username: ${{ env.registry_username }}
-        password: ${{ env.registry_token }}
+        tags: ${{ env.PUSH_TAGS }}
+        registry: ${{ env.REGISTRY }}
+        username: ${{ env.REGISTRY_USERNAME }}
+        password: ${{ env.REGISTRY_TOKEN }}

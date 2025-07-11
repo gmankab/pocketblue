@@ -8,14 +8,6 @@ jobs:
     runs-on: ubuntu-24.04-arm
     permissions:
       packages: write
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - from_tag: rawhide
-            push_tags: rawhide
-          - from_tag: '42'
-            push_tags: 42 latest
     env:
       from_tag:          ${{ matrix.from_tag }}
       push_tags:         ${{ matrix.push_tags }}
