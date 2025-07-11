@@ -1,77 +1,82 @@
 on:
-  workflow_dispatch: {}
-  push: {}
+  workflow_call:
+    inputs:
+      from_tag:
+        required: true
+        type: string
+      push_tags:
+        required: true
+        type: string
 
 jobs:
-  build:
-    name: build containers ${{ matrix.from_tag }}
+  devices_and_desktops:
+    env:
+      FROM_TAG:          ${{ inputs.from_tag }}
+      PUSH_TAGS:         ${{ inputs.push_tags }}
+      REGISTRY:          ${{ vars.REGISTRY }}
+      REGISTRY_USERNAME: ${{ vars.REGISTRY_USERNAME }}
+      REGISTRY_TOKEN:    ${{ secrets.REGISTRY_TOKEN }}
     runs-on: ubuntu-24.04-arm
     permissions:
       packages: write
-    env:
-      from_tag:          ${{ matrix.from_tag }}
-      push_tags:         ${{ matrix.push_tags }}
-      registry:          ${{ vars.registry }}
-      registry_username: ${{ vars.registry_username }}
-      registry_token:    ${{ secrets.registry_token }}
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
 
-      - name: base
-        uses: ./.github/actions/build
+      - name: base:${{ inputs.from_tag }}
+        uses: ./.github/actions/containers-helper
         with:
           from: quay.io/fedora/fedora-bootc
           image: base
           containerfile: base/Containerfile
 
-      - name: oneplus6-base
-        uses: ./.github/actions/build
+      - name: oneplus6-base:${{ inputs.from_tag }}
+        uses: ./.github/actions/containers-helper
         with:
           from: localhost/base
           image: oneplus6-base
           containerfile: devices/oneplus6/Containerfile
-      - name: mipad5-base
-        uses: ./.github/actions/build
+      - name: mipad5-base:${{ inputs.from_tag }}
+        uses: ./.github/actions/containers-helper
         with:
           from: localhost/base
           image: mipad5-base
           containerfile: devices/mipad5/Containerfile
 
-      - name: oneplus6-gnome-mobile
-        uses: ./.github/actions/build
+      - name: oneplus6-gnome-mobile:${{ inputs.from_tag }}
+        uses: ./.github/actions/containers-helper
         with:
           from: localhost/oneplus6-base
           image: oneplus6-gnome-mobile
           containerfile: desktops/gnome-mobile/Containerfile
-      - name: oneplus6-gnome-desktop
-        uses: ./.github/actions/build
+      - name: oneplus6-gnome-desktop:${{ inputs.from_tag }}
+        uses: ./.github/actions/containers-helper
         with:
           from: localhost/oneplus6-base
           image: oneplus6-gnome-desktop
           containerfile: desktops/gnome-desktop/Containerfile
-      - name: oneplus6-phosh
-        uses: ./.github/actions/build
+      - name: oneplus6-phosh:${{ inputs.from_tag }}
+        uses: ./.github/actions/containers-helper
         with:
           from: localhost/oneplus6-base
           image: oneplus6-phosh
           containerfile: desktops/phosh/Containerfile
 
-      - name: mipad5-gnome-mobile
-        uses: ./.github/actions/build
+      - name: mipad5-gnome-mobile:${{ inputs.from_tag }}
+        uses: ./.github/actions/containers-helper
         with:
           from: localhost/mipad5-base
           image: mipad5-gnome-mobile
           containerfile: desktops/gnome-mobile/Containerfile
-      - name: mipad5-gnome-desktop
-        uses: ./.github/actions/build
+      - name: mipad5-gnome-desktop:${{ inputs.from_tag }}
+        uses: ./.github/actions/containers-helper
         with:
           from: localhost/mipad5-base
           image: mipad5-gnome-desktop
           containerfile: desktops/gnome-desktop/Containerfile
-      - name: mipad5-phosh
-        uses: ./.github/actions/build
+      - name: mipad5-phosh:${{ inputs.from_tag }}
+        uses: ./.github/actions/containers-helper
         with:
           from: localhost/mipad5-base
           image: mipad5-phosh

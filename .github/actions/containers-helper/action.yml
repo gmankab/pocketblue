@@ -1,5 +1,5 @@
-name: build
-description: build a container
+name: helper
+description: helper
 
 inputs:
   from:
