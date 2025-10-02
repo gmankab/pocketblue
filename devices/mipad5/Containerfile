@@ -11,7 +11,8 @@ RUN mkdir -p /boot/dtb && \
         kernel-core \
         kernel-modules \
         kernel-modules-core && \
-    dnf -y install kernel && \
+    dnf -y copr enable gmanka/test && \
+    dnf -y install --from-repo='copr:copr.fedorainfracloud.org:gmanka:test' 'kernel-6.16.0-3.rodriguezst.sm8150.*' && \
     rm -r /boot/dtb
 
 RUN dnf -y install \
