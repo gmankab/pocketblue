@@ -15,6 +15,8 @@ RUN dnf -y install \
     bcm283x-firmware \
     qcom-firmware
 
+RUN dnf -y install --from-repo=fedora rmtfs
+
 # qualcomm tools and libs
 RUN dnf -y install \
     libssc \
@@ -22,7 +24,6 @@ RUN dnf -y install \
     pil-squasher \
     tqftpserv \
     pd-mapper \
-    rmtfs \
     qrtr \
     qbootctl \
     bootmac
