@@ -2,7 +2,6 @@ ARG from
 FROM $from
 
 COPY etc/ /etc/
-COPY usr/ /usr/
 
 # kernel
 RUN mkdir -p /boot/dtb && \
@@ -26,8 +25,7 @@ RUN dnf -y install \
 
 RUN systemctl enable \
     tqftpserv.service \
-    rmtfs.service \
-    qbootctl.service
+    rmtfs.service
 
 # cleanup
 RUN rm -rf /var/log/* && dnf clean all
