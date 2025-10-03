@@ -1,0 +1,11 @@
+[copr:copr.fedorainfracloud.org:gmanka:pocketblue-test]
+name=Copr repo for pocketblue-test owned by gmanka
+baseurl=https://download.copr.fedorainfracloud.org/results/gmanka/pocketblue-test/fedora-$releasever-$basearch/
+type=rpm-md
+skip_if_unavailable=True
+gpgcheck=1
+gpgkey=https://download.copr.fedorainfracloud.org/results/gmanka/pocketblue-test/pubkey.gpg
+repo_gpgcheck=0
+enabled=1
+enabled_metadata=1
+priority=49
