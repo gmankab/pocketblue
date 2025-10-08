@@ -14,8 +14,8 @@ jobs:
       - name: get_tag
         id: get_tag
         run: |
-          podman pull quay.io/pocketblue/base:42
-          export full_tag=$(podman inspect quay.io/pocketblue/base:42 --format '{{ index .Config.Labels "org.opencontainers.image.version" }}')
+          podman pull ghcr.io/gmankab/base:42-samsung-ufs
+          export full_tag=$(podman inspect quay.io/pocketblue/base:42-samsung-ufs --format '{{ index .Config.Labels "org.opencontainers.image.version" }}')
           echo release_tag=$(echo $full_tag | cut -d. -f1-2) >> $GITHUB_OUTPUT
       - uses: softprops/action-gh-release@v2
         id: create_release
@@ -40,6 +40,7 @@ jobs:
 
     uses: ./.github/workflows/helper-build-image.yml
     with:
+      image_tag: 42-samsung-ufs
       device: ${{ matrix.device.name }}
       image_name: ${{ matrix.device.name }}-${{ matrix.desktop }}
       args_7z: -mmt=1 -md=1500m
