@@ -12,9 +12,9 @@ fastboot getvar product 2>&1 | grep pipa
 fastboot flash vbmeta_ab images/vbmeta-disabled.img
 fastboot erase   dtbo_ab
 fastboot flash   boot_ab images/kxboot.img
-fastboot flash      cust images/esp.raw
-fastboot flash     super images/boot.raw
-fastboot flash  userdata images/root.raw
+fastboot flash      cust images/fedora_esp.raw
+fastboot flash     super images/fedora_boot.raw
+fastboot flash  userdata images/fedora_rootfs.raw
 
 set +x
 echo 'done flashing, rebooting device now'
