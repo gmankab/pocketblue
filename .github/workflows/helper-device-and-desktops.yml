@@ -1,0 +1,42 @@
+on:
+  workflow_call:
+    inputs:
+      device:
+        required: true
+        type: string
+      from_tag:
+        required: true
+        type: string
+      registry:
+        required: true
+        type: string
+
+jobs:
+  device:
+    permissions:
+      packages: write
+    secrets: inherit
+    uses: ./.github/workflows/helper-build-container.yml
+    with:
+      from_tag: ${{ inputs.from_tag }}
+      from_image: ${{ inputs.registry }}/base
+      target_image: ${{ inputs.device }}-base
+      context: devices/${{ inputs.device }}
+      rechunk: false
+
+  desktops:
+    needs: device
+    permissions:
+      packages: write
+    secrets: inherit
+    strategy:
+      fail-fast: false
+      matrix:
+        desktop: [gnome-desktop, gnome-mobile, plasma-desktop, plasma-mobile, phosh]
+    uses: ./.github/workflows/helper-build-container.yml
+    with:
+      from_tag: ${{ inputs.from_tag }}
+      from_image: ${{ inputs.registry }}/${{ inputs.device }}-base
+      target_image: ${{ inputs.device }}-${{ matrix.desktop }}
+      context: desktops/${{ matrix.desktop }}
+      rechunk: true
