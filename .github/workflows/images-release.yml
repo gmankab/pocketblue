@@ -9,10 +9,10 @@ on:
         description: fedora branch
         required: true
         options:
-          - '42'
-          - '43'
+          - '42-samsung-ufs'
+          - '43-samsung-ufs'
           - 'rawhide'
-        default: '42'
+        default: '42-samsung-ufs'
 
 jobs:
   create_release:
@@ -24,7 +24,7 @@ jobs:
       - name: version
         id: version
         run: |
-          podman pull 'quay.io/pocketblue/base:${{ inputs.fedora_branch }}'
+          podman pull 'ghcr.io/gmankab/base:${{ inputs.fedora_branch }}'
           export full_version=$(podman inspect 'quay.io/pocketblue/base:${{ inputs.fedora_branch }}' --format '{{ index .Config.Labels "org.opencontainers.image.version" }}')
           echo version=$(echo $full_version | cut -d. -f1-2) >> $GITHUB_OUTPUT
       - uses: softprops/action-gh-release@v2
