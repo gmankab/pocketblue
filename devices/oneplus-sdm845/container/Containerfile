@@ -63,7 +63,8 @@ RUN mkdir /boot/dtb && \
         kernel-modules \
         kernel-modules-core && \
     rm -rf /usr/lib/modules/* && \
-    dnf -y install kernel && \
+    dnf -y copr enable gmanka/test && \
+    dnf -y install --from-repo='copr:copr.fedorainfracloud.org:gmanka:test' 'kernel-6.16.7-0.sdm845.dtbs.*' && \
     rm -rf /boot/dtb
 
 # cleanup
