@@ -1,26 +1,43 @@
 on:
   workflow_call:
     inputs:
-      from_tag:
-        required: true
+      from_registry:
+        required: false
         type: string
+        default: ''
+        description: |
+          - registry to build container from
+          - empty string by default
+          - if empty string, vars.REGISTRY will be used then
+          - if no vars.REGISTRY, ghcr.io/<you> will be used then
+          - when building pocketblue/base image, should be set quay.io/fedora
+          - for all other images that are building on top of base one, empty string should be passed
       from_image:
         required: true
         type: string
+        description: container image name to build from
+      from_tag:
+        required: true
+        type: string
+        description: container image tag to build from
       target_image:
         required: true
         type: string
+        description: target container image name
       context:
         required: true
         type: string
+        description: path to dir with a Containerfile
       rechunk:
         required: true
         type: boolean
+        description: |
+          - whether to rechunk image
+          - for desktop images, true should be passed
+          - for base and devices images, false should be passed
     outputs:
       target_tag:
         value: ${{ jobs.build.outputs.target_tag }}
-      registry:
-        value: ${{ jobs.build.outputs.registry }}
 
 jobs:
   build:
@@ -30,20 +47,20 @@ jobs:
       packages: write
     outputs:
       target_tag: ${{ steps.config.outputs.target_tag }}
-      registry: ${{ steps.config.outputs.registry }}
     steps:
       - uses: actions/checkout@v4
       - name: config
         id: config
-        uses: pocketblue/actions/container-config@main
+        uses: pocketblue/actions/container-config@registry
         with:
           from_tag: ${{ inputs.from_tag }}
+          from_registry: ${{ inputs.from_registry }}
           vars_registry: ${{ vars.REGISTRY }}
       - name: build
         id: build
         run: |
           sudo buildah bud \
-            --build-arg 'from=${{ inputs.from_image }}:${{ inputs.from_tag }}' \
+            --build-arg 'from=${{ steps.config.outputs.from_registry }}/${{ inputs.from_image }}:${{ inputs.from_tag }}' \
             --build-arg 'target_tag=${{ steps.config.outputs.target_tag }}' \
             -t '${{ inputs.target_image }}:${{ steps.config.outputs.target_tag }}' \
             ${{ steps.config.outputs.expires && '--label quay.expires-after=1w' || '' }} \
@@ -53,14 +70,14 @@ jobs:
         if: inputs.rechunk
         shell: bash
         run: |
-          export full_version=$(sudo podman inspect '${{ inputs.from_image }}:${{ inputs.from_tag }}' --format '{{ index .Config.Labels "org.opencontainers.image.version" }}')
+          export full_version=$(sudo podman inspect '${{ steps.config.outputs.from_registry }}/${{ inputs.from_image }}:${{ inputs.from_tag }}' --format '{{ index .Config.Labels "org.opencontainers.image.version" }}')
           echo version=$(echo $full_version | cut -d. -f1-2) >> $GITHUB_OUTPUT
       - id: rechunk
         if: inputs.rechunk
         uses: hhd-dev/rechunk@ded27feba22df48134eece2c66ba0fca1289ff40 # v1.2.3
         with:
           rechunk: 'ghcr.io/hhd-dev/rechunk:v1.2.3'
-          prev-ref: ${{ steps.config.outputs.registry }}/${{ inputs.target_image }}:${{ steps.config.outputs.target_tag }}
+          prev-ref: ${{ steps.config.outputs.target_registry }}/${{ inputs.target_image }}:${{ steps.config.outputs.target_tag }}
           ref: localhost/${{ inputs.target_image }}:${{ steps.config.outputs.target_tag }}
           version: ${{ steps.version.outputs.version }}
           pretty: ${{ steps.version.outputs.version }}
@@ -72,6 +89,6 @@ jobs:
           rechunk_ref: ${{ steps.rechunk.outputs.ref || '' }}
           username: ${{ vars.REGISTRY_USERNAME != '' && vars.REGISTRY_USERNAME || github.repository_owner }}
           password: ${{ secrets.REGISTRY_TOKEN != '' && secrets.REGISTRY_TOKEN || secrets.GITHUB_TOKEN }}
-          registry: ${{ steps.config.outputs.registry }}
+          registry: ${{ steps.config.outputs.target_registry }}
           image: ${{ inputs.target_image }}
           tag: ${{ steps.config.outputs.target_tag }}
