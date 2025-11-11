@@ -7,6 +7,27 @@ on:
       from_tag:
         required: true
         type: string
+  workflow_dispatch:
+    inputs:
+      from_tag:
+        type: choice
+        description: 'fedora branch'
+        required: true
+        options:
+          - '42'
+          - '43'
+          - 'rawhide'
+        default: '42'
+      device:
+        type: choice
+        description: 'device name'
+        required: true
+        options:
+          - nothing-spacewar
+          - oneplus-sdm845
+          - xiaomi-nabu
+          - xiaomi-pipa
+          - xunlong-orangepi3-lts
 
 jobs:
   device:
