@@ -31,7 +31,12 @@ jobs:
       fail-fast: false
       matrix:
         desktop: [empty, gnome-desktop, gnome-mobile, plasma-desktop, plasma-mobile, phosh]
-    name: ${{ inputs.device }}-${{ matrix.desktop }}:${{ inputs.tag }}
+    env:
+      TAG: >-
+        ${{ github.ref_name == 'main'
+            && inputs.tag
+            || format('{0}-{1}', inputs.tag, github.ref_name) }}
+    name: ${{ inputs.device }}-${{ matrix.desktop }}:${{ github.ref_name == 'main' && inputs.tag || format('{0}-{1}', inputs.tag, github.ref_name) }}
     steps:
       - uses: actions/checkout@v6
       - uses: pocketblue/actions/images@main
@@ -39,10 +44,10 @@ jobs:
           device: ${{ inputs.device }}
           registry: ${{ vars.REGISTRY || format('ghcr.io/{0}', github.repository_owner) }}
           image_name: ${{ inputs.device }}-${{ matrix.desktop }}
-          image_tag: ${{ inputs.tag }}
+          image_tag: ${{ env.TAG }}
           build_aux: ${{ inputs.device == 'xiaomi-nabu' && inputs.nabu_samsung_ufs && 'build-aux.samsung' || 'build-aux' }}
       - uses: actions/upload-artifact@v4
         with:
-          name: pocketblue-${{ inputs.device }}-${{ matrix.desktop }}-${{ inputs.tag }}
-          path: pocketblue-${{ inputs.device }}-${{ matrix.desktop }}-${{ inputs.tag }}.7z
+          name: pocketblue-${{ inputs.device }}-${{ matrix.desktop }}-${{ env.TAG }}
+          path: pocketblue-${{ inputs.device }}-${{ matrix.desktop }}-${{ env.TAG }}.7z
           compression-level: 0
