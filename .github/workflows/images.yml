@@ -1,5 +1,5 @@
 name: images
-run-name: 'images: ${{ inputs.device }} / fedora ${{ inputs.tag }}'
+run-name: 'images: ${{ inputs.device }} / fedora ${{ inputs.fedora_branch }}'
 on:
   workflow_dispatch:
     inputs:
@@ -14,10 +14,14 @@ on:
           - xiaomi-nabu
           - xiaomi-pipa
           - xunlong-orangepi3-lts
-      tag:
-        type: string
-        description: image tag
+      fedora_branch:
+        type: choice
+        description: 'fedora branch'
         required: true
+        options:
+          - '42'
+          - '43'
+          - 'rawhide'
         default: '43'
       nabu_samsung_ufs:
         type: boolean
@@ -35,7 +39,7 @@ jobs:
         id: config
         uses: pocketblue/actions/container-config@main
         with:
-          from_tag: ${{ inputs.tag }}
+          from_tag: ${{ inputs.fedora_branch }}
           vars_registry: ${{ vars.REGISTRY }}
           device: ${{ inputs.device || '' }}
           device_list: |
