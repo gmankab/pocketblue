@@ -38,5 +38,7 @@ dnf -y remove \
     kernel-modules \
     kernel-modules-core
 rm -rf /usr/lib/modules/*
+dnf -y copr enable gmanka/test
+dnf -y install --from-repo='copr:copr.fedorainfracloud.org:gmanka:test' 'kernel-6.17.0-61.sm8150.*'
 dnf -y install kernel
 rm -r /boot/dtb
