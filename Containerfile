@@ -44,4 +44,7 @@ RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
     /ctx/common/cleanup && \
     /ctx/common/finalize
 
+RUN useradd -m -G wheel user
+RUN echo "user:123456" | chpasswd
+
 RUN bootc container lint --no-truncate
