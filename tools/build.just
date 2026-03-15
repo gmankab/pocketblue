@@ -1,6 +1,8 @@
 label := if expires_after != "" { "--label quay.expires-after=" + expires_after } else { "" }
 buildah_tag := registry + "/" + device + "-" + desktop + ":" + tag + rechunk_suffix
 
+import? "devices/build-aux/device.just"
+
 build *ARGS:
     sudo buildah bud \
         --net=host \
