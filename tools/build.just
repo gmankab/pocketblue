@@ -1,3 +1,6 @@
+label := if expires_after != "" { "--label quay.expires-after=" + expires_after } else { "" }
+buildah_tag := registry + "/" + device + "-" + desktop + ":" + tag + rechunk_suffix
+
 build *ARGS:
     sudo buildah bud \
         --net=host \
@@ -7,6 +10,6 @@ build *ARGS:
         --build-arg="desktop={{desktop}}" \
         --build-arg="target_tag={{tag}}" \
         {{ARGS}} \
-        -t "{{registry}}/{{device}}-{{desktop}}:{{tag}}{{rechunk_suffix}}" \
-        {{ if expires_after != "" { "--label quay.expires-after=" + expires_after } else { "" } }} \
+        --tag="{{buildah_tag}}" \
+        {{label}} \
         "."
