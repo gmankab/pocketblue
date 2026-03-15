@@ -4,6 +4,7 @@ buildah_tag := registry + "/" + device + "-" + desktop + ":" + tag + rechunk_suf
 build *ARGS:
     sudo buildah bud \
         --net=host \
+        --layers=true \
         --arch="{{arch}}" \
         --build-arg="base={{base}}:{{branch}}" \
         --build-arg="device={{device}}" \
