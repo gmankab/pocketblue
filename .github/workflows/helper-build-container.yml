@@ -30,11 +30,6 @@ on:
         type: string
         default: ''
 
-      # build args
-      xiaomi_nabu_samsung_ufs:
-        required: true
-        type: boolean
-
 env:
   JUST_ARGS: >
     branch=${{ inputs.fedora_branch }}
@@ -62,7 +57,7 @@ jobs:
 
       - name: Build
         id: build
-        run: just $JUST_ARGS build --build-arg xiaomi_nabu_samsung_ufs=${{ inputs.xiaomi_nabu_samsung_ufs }}
+        run: just $JUST_ARGS build --build-arg
 
       - name: Rechunk
         id: rechunk
