@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+set -uexo pipefail
+
+cp -arfT files/etc /etc
+cd ../xiaomi-nabu
+./build

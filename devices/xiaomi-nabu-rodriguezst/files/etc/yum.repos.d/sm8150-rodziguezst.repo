@@ -1,4 +1,4 @@
-[copr:copr.fedorainfracloud.org:pocketblue:sm8150-samsung-ufs]
+[copr:copr.fedorainfracloud.org:pocketblue:sm8150-rodriguezst]
 name=Copr repo for sm8150-samsung-ufs owned by pocketblue
 baseurl=https://download.copr.fedorainfracloud.org/results/pocketblue/sm8150-samsung-ufs/fedora-$releasever-$basearch/
 type=rpm-md
