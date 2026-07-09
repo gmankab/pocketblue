@@ -13,7 +13,6 @@ dnf -y remove \
     filelight \
     kcharselect \
     kdebugsettings \
-    kde-connect \
     khelpcenter \
     kinfocenter \
     kwrite \
