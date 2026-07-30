@@ -134,12 +134,7 @@ jobs:
       - name: Post-process images
         run: |
           sudo $(which just) postprocess
-          if [ -d images ]; then
-            sudo chown "$(id -u):$(id -g)" -R output/images
-          fi
-          if [ -f disk.raw ]; then
-            sudo chown "$(id -u):$(id -g)" output/disk.raw
-          fi
+          sudo chown -R "$(id -u):$(id -g)" output/
 
       - name: Collect artifacts
         run: |
