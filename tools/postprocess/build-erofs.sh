@@ -6,7 +6,7 @@ which mkfs.erofs
 
 ROOTFS_TAR=rootfs.tar
 ROOTFS_EXTRACT=pocketblue-rootfs
-ROOTFS_ERO=rootfs.ero
+ROOTFS_ERO="$OUTPUT/rootfs.ero"
 
 CTR="$(podman create --rm $OCI_IMAGE /usr/bin/bash)"
 podman export "$CTR" > $ROOTFS_TAR

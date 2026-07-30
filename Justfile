@@ -36,9 +36,6 @@ rechunk_suffix := env("PB_RECHUNK_SUFFIX", "-build")
 arch := env("PB_ARCH", "arm64")
 
 # disk image vars
-bib_config := env("PB_BIB_CONFIG", "./bootc-image-builder.toml")
-bib_output := env("PB_BIB_CONFIG", "./output")
-bib := env("PB_BIB", "quay.io/centos-bootc/bootc-image-builder:latest")
 disk_type := env("PB_DISK_TYPE", "raw")
 rootfs := env("PB_ROOTFS", "btrfs")
 compression_7z := env("PB_COMPRESSION_7Z", "") # 7z compression args, empty means default compression
