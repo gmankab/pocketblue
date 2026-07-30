@@ -10,4 +10,9 @@ dd if=$root_part of=$OUTPUT/images/fedora_root.raw bs=1M
 
 sync
 
+# pad the last block to 4096 bytes, fastboot needs this
+if (( $(stat -c%s "$OUTPUT/images/fedora_root.raw") % 4096 != 0 )); then
+    dd if=/dev/zero bs=1 count=512 | tee -a $OUTPUT/images/fedora_root.raw
+fi
+
 chmod 666 $OUTPUT/images/*
