@@ -6,7 +6,7 @@ size=$(blockdev --getsize64 $esp_part)
 uuid=$(blkid -s UUID -o value $esp_part | tr -d '-')
 
 truncate -s $size esp_temp.raw
-mkfs.vfat -F $CONF_ESP_FAT_SIZE -S $CONF_ESP_SECTOR_SIZE -n EFI -i $uuid esp_temp.raw
+mkfs.vfat -S $CONF_ESP_SECTOR_SIZE -n EFI -i $uuid esp_temp.raw
 
 mkdir -p esp.old esp.new
 mount $esp_part esp.old

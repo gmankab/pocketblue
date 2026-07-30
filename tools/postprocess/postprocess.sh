@@ -14,7 +14,7 @@ export root_part="${part[3]}"
 [ "$CONF_INSTALL_DTB" = "true" ] && $SCRIPTS/install-dtb.sh
 [ "$CONF_BUILD_EROFS" = "true" ] && $SCRIPTS/build-erofs.sh
 
-if [[ "$CONF_ESP_FAT_SIZE" -ne 32 || "$CONF_ESP_SECTOR_SIZE" -ne 4096 ]]; then
+if [[ "$CONF_ESP_SECTOR_SIZE" -ne 4096 ]]; then
     $SCRIPTS/rebuild-esp.sh
 fi
 
