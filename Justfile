@@ -28,6 +28,7 @@ base := env("PB_BASE",
 
 registry := env("PB_REGISTRY", "localhost")
 
+fallback_image := env("PB_FALLBACK_IMAGE", registry / device + "-" + desktop + ":" + branch)
 full_image := env("PB_FULL_IMAGE", registry / device + "-" + desktop + ":" + tag)
 
 expires_after := env("PB_EXPIRES_AFTER", "")

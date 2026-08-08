@@ -57,10 +57,12 @@ jobs:
             echo "TARGET_IMAGE_NAME=${{ inputs.device }}-${{ inputs.desktop }}" >> $GITHUB_ENV
           else
             pb_tag="${{ inputs.tag }}-${{ steps.conf.outputs.device_variant }}"
+            fallback_tag="${{ inputs.fedora_branch }}-${{ steps.conf.outputs.device_variant }}"
             target_image_name="${{ steps.conf.outputs.device_base }}-${{ inputs.desktop }}"
 
             echo "PB_TAG=$pb_tag" >> $GITHUB_ENV
             echo "PB_FULL_IMAGE=${INPUT_REGISTRY,,}/${target_image_name}:${pb_tag}" >> $GITHUB_ENV
+            echo "PB_FALLBACK_IMAGE=${INPUT_REGISTRY,,}/${target_image_name}:${fallback_tag}" >> $GITHUB_ENV
             echo "TARGET_IMAGE_NAME=$target_image_name" >> $GITHUB_ENV
           fi
 
@@ -79,18 +81,7 @@ jobs:
 
       - name: Pull
         id: pull
-        run: |
-          # retry 3 times
-          n=0
-          until [ "$n" -ge 3 ]; do
-            just pull && break
-            n=$((n+1))
-            sleep 10
-          done
-
-          if [ "$n" -ge 3 ]; then
-             exit 1
-          fi
+        run: just pull
 
       - name: Build
         id: build
@@ -98,8 +89,7 @@ jobs:
 
       - name: Rechunk
         id: rechunk
-        run: |
-          just rechunk
+        run: just rechunk
 
       - name: Push
         id: push
