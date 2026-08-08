@@ -29,6 +29,10 @@ on:
         required: false
         type: string
         default: ''
+      rechunker:
+        required: false
+        type: string
+        default: 'rpm-ostree'
 
 jobs:
   build:
@@ -85,10 +89,16 @@ jobs:
         run: sudo --preserve-env=PATH $(which just) pull
 
       - name: Build
+        if: ${{ inputs.rechunker == 'rpm-ostree' }}
         run: sudo --preserve-env=PATH $(which just) build
 
       - name: Rechunk
+        if: ${{ inputs.rechunker == 'rpm-ostree' }}
         run: sudo --preserve-env=PATH $(which just) rechunk
+
+      - name: Build & rechunk
+        if: ${{ inputs.rechunker == 'chunkah' }}
+        run: sudo --preserve-env=PATH $(which just) build-chunkah
 
       - name: Push
         id: push
