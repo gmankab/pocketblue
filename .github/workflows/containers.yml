@@ -11,6 +11,10 @@ on:
       desktop:
         type: string
         required: false
+      rechunker:
+        type: string
+        required: false
+        default: 'rpm-ostree'
       target_tag_override:
         type: string
         required: false
@@ -51,6 +55,14 @@ on:
           - 'plasma-mobile'
           - 'phosh'
         default: 'all'
+      rechunker:
+        type: choice
+        description: 'rechunker'
+        required: true
+        options:
+          - 'rpm-ostree'
+          - 'chunkah'
+        default: 'rpm-ostree'
       target_tag_override:
         type: string
         description: 'override target tag'
@@ -123,5 +135,6 @@ jobs:
       device: ${{ matrix.device }}
       desktop: ${{ matrix.desktop }}
       tag: ${{ inputs.target_tag_override && inputs.target_tag_override || needs.config.outputs.target_tag }}
+      rechunker: ${{ inputs.rechunker }}
       latest: ${{ needs.config.outputs.latest }}
       expires: ${{ needs.config.outputs.expires }}

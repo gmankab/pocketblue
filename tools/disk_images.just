@@ -1,6 +1,6 @@
 disk:
-    sudo mkdir -p {{bib_output}}
-    sudo podman run \
+    mkdir -p {{bib_output}}
+    podman run \
         --rm -it --privileged \
         --security-opt label=type:unconfined_t \
         -v {{bib_config}}:/config.toml:ro \
@@ -31,7 +31,7 @@ postprocess:
     export BUILD_AUX=build-aux
     export OCI_IMAGE="{{full_image}}"
 
-    sudo -E tools/postprocess/postprocess.sh
+    tools/postprocess/postprocess.sh
 
 artifacts:
     #!/usr/bin/env bash

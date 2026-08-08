@@ -29,6 +29,10 @@ on:
         required: false
         type: string
         default: ''
+      rechunker:
+        required: false
+        type: string
+        default: 'rpm-ostree'
 
 jobs:
   build:
@@ -53,18 +57,20 @@ jobs:
           echo "REGISTRY_USERNAME=${REGISTRY_USERNAME,,}" >> ${GITHUB_ENV}
 
           if [ -z "${{ steps.conf.outputs.device_variant }}" ]; then
-            echo "PB_TAG=${{ inputs.tag }}" >> $GITHUB_ENV
+            echo "PB_TAG=${{ inputs.tag }}" >> .env
             echo "TARGET_IMAGE_NAME=${{ inputs.device }}-${{ inputs.desktop }}" >> $GITHUB_ENV
           else
             pb_tag="${{ inputs.tag }}-${{ steps.conf.outputs.device_variant }}"
+            fallback_tag="${{ inputs.fedora_branch }}-${{ steps.conf.outputs.device_variant }}"
             target_image_name="${{ steps.conf.outputs.device_base }}-${{ inputs.desktop }}"
 
-            echo "PB_TAG=$pb_tag" >> $GITHUB_ENV
-            echo "PB_FULL_IMAGE=${INPUT_REGISTRY,,}/${target_image_name}:${pb_tag}" >> $GITHUB_ENV
+            echo "PB_TAG=$pb_tag" >> .env
+            echo "PB_FULL_IMAGE=${INPUT_REGISTRY,,}/${target_image_name}:${pb_tag}" >> .env
+            echo "PB_FALLBACK_IMAGE=${INPUT_REGISTRY,,}/${target_image_name}:${fallback_tag}" >> .env
             echo "TARGET_IMAGE_NAME=$target_image_name" >> $GITHUB_ENV
           fi
 
-          cat >> ${GITHUB_ENV} << EOF
+          cat >> .env << EOF
           PB_BRANCH=${{ inputs.fedora_branch }}
           PB_DEVICE=${{ inputs.device }}
           PB_DESKTOP=${{ inputs.desktop }}
@@ -73,33 +79,26 @@ jobs:
           PB_RECHUNK_SUFFIX=-build
           EOF
 
+          cat .env >> $GITHUB_ENV
+
       - uses: extractions/setup-just@v4
         with:
           just-version: '1.46.0'
 
       - name: Pull
-        id: pull
-        run: |
-          # retry 3 times
-          n=0
-          until [ "$n" -ge 3 ]; do
-            just pull && break
-            n=$((n+1))
-            sleep 10
-          done
-
-          if [ "$n" -ge 3 ]; then
-             exit 1
-          fi
+        run: sudo --preserve-env=PATH $(which just) pull
 
       - name: Build
-        id: build
-        run: just build
+        if: ${{ inputs.rechunker == 'rpm-ostree' }}
+        run: sudo --preserve-env=PATH $(which just) build
 
       - name: Rechunk
-        id: rechunk
-        run: |
-          just rechunk
+        if: ${{ inputs.rechunker == 'rpm-ostree' }}
+        run: sudo --preserve-env=PATH $(which just) rechunk
+
+      - name: Build & rechunk
+        if: ${{ inputs.rechunker == 'chunkah' }}
+        run: sudo --preserve-env=PATH $(which just) build-chunkah
 
       - name: Push
         id: push
