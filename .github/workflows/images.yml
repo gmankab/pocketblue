@@ -129,11 +129,11 @@ jobs:
 
       - name: Build disk image
         run: |
-          just disk
+          sudo $(which just) disk
 
       - name: Post-process images
         run: |
-          just postprocess
+          sudo $(which just) postprocess
           if [ -d images ]; then
             sudo chown "$(id -u):$(id -g)" -R images
           fi

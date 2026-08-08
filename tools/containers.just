@@ -6,7 +6,7 @@ pull-image image:
     # retry 3 times
     n=0
     until [ "$n" -ge 3 ]; do
-      sudo podman pull {{image}} && break
+      podman pull {{image}} && break
       n=$((n+1))
       sleep 10
     done
@@ -25,14 +25,14 @@ pull-pocketblue:
     else
         # to rechunk new branches correctly
         just pull-image {{fallback_image}}
-        sudo podman tag {{fallback_image}} {{full_image}}
+        podman tag {{fallback_image}} {{full_image}}
     fi
 
 [parallel]
 pull: (pull-image base) pull-pocketblue
 
 build *ARGS:
-    sudo buildah bud \
+    buildah bud \
         --layers=true \
         --arch="{{arch}}" \
         --build-arg="base={{base}}" \
@@ -45,7 +45,7 @@ build *ARGS:
         "."
 
 rechunk *ARGS:
-    sudo podman run --rm --privileged -v /var/lib/containers:/var/lib/containers {{ARGS}} \
+    podman run --rm --privileged -v /var/lib/containers:/var/lib/containers {{ARGS}} \
         {{base}} \
         rpm-ostree experimental compose build-chunked-oci \
             --bootc \
@@ -77,10 +77,10 @@ sign digest:
     cosign sign -y --new-bundle-format=false --key env://SIGNING_KEY "{{registry}}/{{device}}-{{desktop}}@{{digest}}"
 
 rebase:
-    sudo rpm-ostree rebase ostree-unverified-image:containers-storage:{{full_image}}
+    rpm-ostree rebase ostree-unverified-image:containers-storage:{{full_image}}
 
 bootc *ARGS:
-    sudo podman run \
+    podman run \
         --rm --privileged --pid=host \
         -it \
         -v /sys/fs/selinux:/sys/fs/selinux \
