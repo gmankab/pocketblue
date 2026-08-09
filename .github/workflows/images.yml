@@ -129,17 +129,7 @@ jobs:
 
       - name: Build disk image
         run: |
-          sudo $(which just) disk
-
-      - name: Post-process images
-        run: |
-          sudo $(which just) postprocess
-          if [ -d images ]; then
-            sudo chown "$(id -u):$(id -g)" -R images
-          fi
-          if [ -f disk.raw ]; then
-            sudo chown "$(id -u):$(id -g)" disk.raw
-          fi
+          just disk
 
       - name: Collect artifacts
         run: |
