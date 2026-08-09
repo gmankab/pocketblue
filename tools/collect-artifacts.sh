@@ -4,7 +4,7 @@ set -uexo pipefail
 
 which 7z
 
-mkdir out
+mkdir -p out
 if [ -d images ]; then
     mv images out/
 fi

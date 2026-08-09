@@ -1,37 +1,25 @@
 disk:
-    mkdir -p {{bib_output}}
-    podman run \
-        --rm -it --privileged \
-        --security-opt label=type:unconfined_t \
-        -v {{bib_config}}:/config.toml:ro \
-        -v {{bib_output}}:/output \
-        -v /var/lib/containers/storage:/var/lib/containers/storage \
-        {{bib}} \
-            --use-librepo=True \
-            --type={{disk_type}} \
-            --rootfs={{rootfs}} \
-            {{full_image}}
-
-postprocess:
     #!/usr/bin/env bash
-    set -euo pipefail
+    set -uexo pipefail
 
-    source devices/{{device}}/build-aux/device.conf
-    export CONF_ESP_SIZE=${esp_size:-}
-    export CONF_ESP_SECTOR_SIZE=${esp_sector_size:-4096}
-    export CONF_ESP_FAT_SIZE=${esp_fat_size:-32}
-    export CONF_BOOT_SIZE=${boot_size:-}
-    export CONF_INSTALL_DTB=${install_dtb:-}
-    export CONF_SPLIT_PARTITIONS=${split_partitions:-}
-    export CONF_BUILD_EROFS=${build_erofs:-false}
-
-    export ROOTFS_TYPE={{rootfs}}
-    export FULL_IMAGE={{bib_output}}
-    export ACTION_PATH=tools/postprocess
-    export BUILD_AUX=build-aux
-    export OCI_IMAGE="{{full_image}}"
-
-    tools/postprocess/postprocess.sh
+    mkdir -p out/images
+    sudo mkdir -p /mnt/fedora_rootfs /mnt/root_subvol
+    truncate -s 6G out/images/fedora_rootfs.raw
+    mkfs.btrfs -f --features ^bgt out/images/fedora_rootfs.raw
+    sudo losetup --find out/images/fedora_rootfs.raw
+    sudo mount /dev/loop0 /mnt/fedora_rootfs
+    sudo btrfs subvolume create /mnt/fedora_rootfs/root
+    sudo umount /mnt/fedora_rootfs
+    sudo mount --options=subvol=/root /dev/loop0 /mnt/root_subvol
+    sudo podman run \
+        --rm \
+        --pid=host \
+        --privileged \
+        -v /mnt/root_subvol:/root_subvol:rslave \
+        -v .:/data:ro \
+        {{full_image}} \
+        /data/tools/postprocess/only-fedora-rootfs.sh
+    sudo umount /mnt/root_subvol
 
 artifacts:
     #!/usr/bin/env bash
