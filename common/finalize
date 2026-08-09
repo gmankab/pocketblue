@@ -8,5 +8,3 @@ find /var/* -maxdepth 0 -type d \! -name cache -exec rm -fr {} \;
 
 mkdir -p /var/tmp
 chmod -R 1777 /var/tmp
-
-ostree container commit
