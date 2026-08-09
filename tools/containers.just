@@ -6,13 +6,13 @@ pull-image image:
     # retry 3 times
     n=0
     until [ "$n" -ge 3 ]; do
-      podman pull {{image}} && break
-      n=$((n+1))
-      sleep 10
+        podman pull {{image}} && break
+        n=$((n+1))
+        sleep 10
     done
 
     if [ "$n" -ge 3 ]; then
-       exit 1
+        exit 1
     fi
 
 [private]
@@ -22,10 +22,12 @@ pull-pocketblue:
 
     if skopeo inspect docker://{{full_image}} >/dev/null 2>&1; then
         just pull-image {{full_image}}
-    else
+    elif skopeo inspect docker://{{fallback_image}} >/dev/null 2>&1; then
         # to rechunk new branches correctly
         just pull-image {{fallback_image}}
         podman tag {{fallback_image}} {{full_image}}
+    else
+        echo "::warning::Could not find a baseline image for rechunking"
     fi
 
 [parallel]
