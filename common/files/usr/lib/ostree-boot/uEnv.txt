@@ -1,0 +1,7 @@
+ostree_load_kernel=load ${rootdev}:${rootpart} ${kernel_addr_r} /root${kernel_image}
+ostree_save_kernel_size=setenv kernel_size ${filesize}
+ostree_load_ramdisk=load ${rootdev}:${rootpart} ${ramdisk_addr_r} /root${ramdisk_image}
+ostree_save_ramdisk_size=setenv ramdisk_size ${filesize}
+ostree_load_fdt=load ${rootdev}:${rootpart} ${fdt_addr_r} /root${fdtdir}/${fdtfile}
+ostree_boot=bootefi ${kernel_addr_r}:${kernel_size} ${ramdisk_addr_r}:${ramdisk_size} ${fdt_addr_r}
+uenvcmd=run ostree_load_kernel ostree_save_kernel_size ostree_load_ramdisk ostree_save_ramdisk_size ostree_load_fdt ostree_boot
