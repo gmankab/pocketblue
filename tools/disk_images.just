@@ -8,7 +8,6 @@ disk:
         ghcr.io/osbuild/image-builder-cli:latest \
             build \
                 --bootc-ref={{full_image}} \
-                --bootc-default-fs={{rootfs}} \
                 --blueprint=/blueprint.toml \
                 --output-dir=/output \
                 --output-name=disk.raw \

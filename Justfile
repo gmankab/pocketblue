@@ -37,7 +37,6 @@ arch := env("PB_ARCH", "arm64")
 
 # disk image vars
 disk_type := env("PB_DISK_TYPE", "raw")
-rootfs := env("PB_ROOTFS", "btrfs")
 compression_7z := env("PB_COMPRESSION_7Z", "") # 7z compression args, empty means default compression
 
 import "tools/containers.just"
