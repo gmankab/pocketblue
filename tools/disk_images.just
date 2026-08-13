@@ -12,7 +12,7 @@ disk:
                 --output-dir=/output \
                 --output-name=disk.raw \
                 --progress=verbose \
-                {{disk_type}}
+                raw
 
 postprocess:
     #!/usr/bin/env bash
