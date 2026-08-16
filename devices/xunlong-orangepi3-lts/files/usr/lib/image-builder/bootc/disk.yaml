@@ -23,7 +23,7 @@ partition_table:
         fstab_options: "ro"
         fstab_freq: 0
         fstab_passno: 0
-    - size: "14 GiB"
+    - size: "6 GiB"
       type: "0FC63DAF-8483-4772-8E79-3D69D8477DE4" # Linux Filesystem
       payload_type: "btrfs"
       payload:

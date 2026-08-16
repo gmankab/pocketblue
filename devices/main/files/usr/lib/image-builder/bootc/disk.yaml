@@ -12,7 +12,7 @@ partition_table:
         fstab_options: "umask=0077,shortname=winnt"
         fstab_freq: 0
         fstab_passno: 2
-    - size: "20 GiB"
+    - size: "6 GiB"
       type: "0FC63DAF-8483-4772-8E79-3D69D8477DE4" # Linux Filesystem
       payload_type: "btrfs"
       payload:
