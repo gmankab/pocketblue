@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
-set -euo pipefail
+set -xeuo pipefail
 
-# Stock Fedora kernel already includes virtio drivers for QEMU
+cp -arfT files/usr /usr
+
+# disable the legacy BIOS bootupd component (x86_64 only)
+rm /usr/lib/bootupd/updates/BIOS.json || true
