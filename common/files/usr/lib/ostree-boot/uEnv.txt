@@ -1,0 +1,2 @@
+uenvcmd=load blkmap 0:0 ${fdt_addr_r} /root${fdtdir}/${fdtfile} && load blkmap 0:0 ${ramdisk_addr_r} /root${ramdisk_image} && setenv ramdisk_size ${filesize} && load blkmap 0:0 ${loadaddr} /root${kernel_image} && bootefi ${fileaddr} ${ramdisk_addr_r}:${ramdisk_size} ${fdt_addr_r}
+uenvcmd_deployment=env indirect kernel_image kernel_image${ostree_index} && env indirect ramdisk_image ramdisk_image${ostree_index} && env indirect fdtdir fdtdir${ostree_index} && env indirect bootargs bootargs${ostree_index} && run uenvcmd
