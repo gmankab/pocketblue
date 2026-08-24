@@ -24,3 +24,6 @@ dnf -y swap glibc-all-langpacks glibc-langpack-en
 dnf -y remove dracut-config-rescue
 
 dnf -y remove nvidia-gpu-firmware
+
+useradd -M -G wheel user
+echo user:123456 | sudo chpasswd
