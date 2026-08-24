@@ -1,0 +1,2 @@
+uenvcmd=setenv ostree; setexpr bootarg_value_addr ${loadaddr} + 8; for boot_argument in ${bootargs}; do setenv bootarg ${boot_argument}; env export -b ${loadaddr} bootarg && env import -b ${bootarg_value_addr} - ostree; done; env exists ostree && load blkmap 0:0 ${fdt_addr_r} /root${fdtdir}/${fdtfile} && load blkmap 0:0 ${loadaddr} /root${ostree}/usr/lib/modules/uki.efi && bootefi ${fileaddr} ${fdt_addr_r}
+uenvcmd_deployment=env indirect fdtdir fdtdir${ostree_index} && env indirect bootargs bootargs${ostree_index} && run uenvcmd
