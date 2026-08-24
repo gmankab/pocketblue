@@ -4,6 +4,13 @@ set -uexo pipefail
 
 sed -i "s/^PRETTY_NAME=.*/PRETTY_NAME=\"Fedora Linux ${target_tag} (${desktop})\"/" /usr/lib/os-release
 
+cd /usr/lib/modules/*
+ukify build \
+  --linux=vmlinuz \
+  --initrd=initramfs.img \
+  --uname=$(basename /usr/lib/modules/*) \
+  --output=/usr/lib/modules/uki.efi
+
 dnf5 clean all
 
 find /var/* -maxdepth 0 -type d \! -name cache -exec rm -fr {} \;
