@@ -1,0 +1,2 @@
+uenvcmd=setenv uki_image "${bootargs#*ostree=}"; setenv uki_image "${uki_image%% *}/usr/lib/modules/uki.efi"; load ${rootdev}#userdata ${loadaddr} /root${uki_image} && bootefi ${fileaddr}
+uenvcmd_deployment=env indirect bootargs bootargs${ostree_index} && run uenvcmd
