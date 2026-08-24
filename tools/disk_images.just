@@ -1,18 +1,30 @@
+disk-prepare:
+    #!/usr/bin/env bash
+    set -uexo pipefail
+    mkdir -p out/images
+    truncate -s 6G out/images/fedora_rootfs.raw
+    mkfs.btrfs -f --features ^bgt out/images/fedora_rootfs.raw
+
 disk:
-    mkdir -p ./output
+    #!/usr/bin/env bash
+    set -uexo pipefail
+    mkdir -p /mnt/fedora_rootfs /mnt/root_subvol
+    losetup --find out/images/fedora_rootfs.raw
+    mount /dev/loop0 /mnt/fedora_rootfs
+    btrfs subvolume create /mnt/fedora_rootfs/root
+    umount /mnt/fedora_rootfs
+    mount --options=subvol=/root /dev/loop0 /mnt/root_subvol
     podman run \
-        --rm -it --privileged \
-        -v /var/lib/containers/storage:/var/lib/containers/storage \
-        -v ./output:/output \
-        -v ./common/blueprint.toml:/blueprint.toml \
-        ghcr.io/osbuild/image-builder-cli:latest \
-            build \
-                --bootc-ref={{full_image}} \
-                --blueprint=/blueprint.toml \
-                --output-dir=/output \
-                --output-name=disk.raw \
-                --progress=verbose \
-                raw
+        --rm \
+        --pid=host \
+        --ipc=host \
+        --privileged \
+        -v /var/lib/containers:/var/lib/containers \
+        -v /mnt/root_subvol:/root_subvol:rslave \
+        -v .:/data:ro \
+        {{full_image}} \
+        /data/tools/postprocess/only-fedora-rootfs.sh
+    umount /mnt/root_subvol
 
 postprocess:
     #!/usr/bin/env bash
