@@ -100,14 +100,65 @@ jobs:
         if: ${{ inputs.rechunker == 'chunkah' }}
         run: sudo --preserve-env=PATH $(which just) build-chunkah
 
-      - name: Push
-        id: push
-        uses: pocketblue/actions/container-push@main
+      - name: Install Cosign
+        if: ${{ secrets.SIGNING_KEY }}
+        uses: sigstore/cosign-installer@v4.1.1
+
+      - name: Login to registry
         env:
-          latest: ${{ inputs.latest }}
           username: ${{ env.REGISTRY_USERNAME }}
           password: ${{ secrets.REGISTRY_TOKEN || secrets.GITHUB_TOKEN }}
-          registry: ${{ env.PB_REGISTRY }}
+        run: |
+          sudo podman login --username $username --password $password $PB_REGISTRY
+          echo "$password" | docker login -u $username --password-stdin $PB_REGISTRY # for cosign
+
+      - name: Push to registry
+        id: push
+        run: |
+          # retry 3 times
+          function push {
+            n=0
+            until [ "$n" -ge 3 ]; do
+              sudo podman push --digestfile=/tmp/digestfile $PB_FULL_IMAGE && break
+              n=$((n+1))
+              sleep 10
+            done
+
+            if [ "$n" -ge 3 ]; then
+              exit 1
+            fi
+          }
+
+          # HACK: push twice as a workaround to push rechunk annotations
+          push
+          push
+
+          echo "digest=$(< /tmp/digestfile)" | tee "${GITHUB_OUTPUT}"
+
+      - name: Sign with cosign
+        if: ${{ secrets.SIGNING_KEY }}
+        env:
           signing_key: ${{ secrets.SIGNING_KEY }}
-          name: ${{ env.TARGET_IMAGE_NAME }}
-          tag: ${{ env.PB_TAG }}
+        run: |
+          cosign sign -y --new-bundle-format=false --use-signing-config=false --key env://signing_key "$PB_REGISTRY/$TARGET_IMAGE_NAME@${{ steps.push.outputs.digest }}"
+
+      - name: Push latest
+        if: ${{ inputs.latest }}
+        run: |
+          sudo podman image tag $PB_FULL_IMAGE $PB_REGISTRY/$TARGET_IMAGE_NAME:latest
+
+          function push {
+            n=0
+            until [ "$n" -ge 3 ]; do
+              sudo podman push $PB_REGISTRY/$TARGET_IMAGE_NAME:latest && break
+              n=$((n+1))
+              sleep 10
+            done
+
+            if [ "$n" -ge 3 ]; then
+              exit 1
+            fi
+          }
+
+          push
+          push
