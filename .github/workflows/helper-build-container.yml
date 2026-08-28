@@ -117,9 +117,11 @@ jobs:
         run: |
           # retry 3 times
           function push {
+            img=$1
+
             n=0
             until [ "$n" -ge 3 ]; do
-              sudo podman push --digestfile=/tmp/digestfile $PB_FULL_IMAGE && break
+              sudo podman push --digestfile=/tmp/digestfile $img && break
               n=$((n+1))
               sleep 10
             done
@@ -130,10 +132,17 @@ jobs:
           }
 
           # HACK: push twice as a workaround to push rechunk annotations
-          push
-          push
+          push $PB_FULL_IMAGE
+          push $PB_FULL_IMAGE
 
           echo "digest=$(< /tmp/digestfile)" | tee "${GITHUB_OUTPUT}"
+
+          # create and push the :latest tag
+          if [ "${{ inputs.latest }}" == "true" ]; then
+            sudo podman image tag $PB_FULL_IMAGE $PB_REGISTRY/$TARGET_IMAGE_NAME:latest
+            push $PB_REGISTRY/$TARGET_IMAGE_NAME:latest
+            push $PB_REGISTRY/$TARGET_IMAGE_NAME:latest
+          fi
 
       - name: Sign with cosign
         if: ${{ secrets.SIGNING_KEY }}
@@ -141,24 +150,3 @@ jobs:
           signing_key: ${{ secrets.SIGNING_KEY }}
         run: |
           cosign sign -y --new-bundle-format=false --use-signing-config=false --key env://signing_key "$PB_REGISTRY/$TARGET_IMAGE_NAME@${{ steps.push.outputs.digest }}"
-
-      - name: Push latest
-        if: ${{ inputs.latest }}
-        run: |
-          sudo podman image tag $PB_FULL_IMAGE $PB_REGISTRY/$TARGET_IMAGE_NAME:latest
-
-          function push {
-            n=0
-            until [ "$n" -ge 3 ]; do
-              sudo podman push $PB_REGISTRY/$TARGET_IMAGE_NAME:latest && break
-              n=$((n+1))
-              sleep 10
-            done
-
-            if [ "$n" -ge 3 ]; then
-              exit 1
-            fi
-          }
-
-          push
-          push
