@@ -134,14 +134,14 @@ jobs:
           }
 
           # HACK: push twice as a workaround to push rechunk annotations
-          push $PB_FULL_IMAGE
-          push $PB_FULL_IMAGE
+          push "$PB_REGISTRY/$TARGET_IMAGE_NAME:$PB_TAG"
+          push "$PB_REGISTRY/$TARGET_IMAGE_NAME:$PB_TAG"
 
           echo "digest=$(< /tmp/digestfile)" | tee "${GITHUB_OUTPUT}"
 
           # create and push the :latest tag
           if [ "${{ inputs.latest }}" == "true" ]; then
-            sudo podman image tag $PB_FULL_IMAGE $PB_REGISTRY/$TARGET_IMAGE_NAME:latest
+            sudo podman image tag $PB_REGISTRY/$TARGET_IMAGE_NAME:$PB_TAG $PB_REGISTRY/$TARGET_IMAGE_NAME:latest
             push $PB_REGISTRY/$TARGET_IMAGE_NAME:latest
             push $PB_REGISTRY/$TARGET_IMAGE_NAME:latest
           fi
