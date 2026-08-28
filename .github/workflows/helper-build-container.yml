@@ -40,6 +40,8 @@ jobs:
     runs-on: ubuntu-26.04-arm
     permissions:
       packages: write
+    env:
+      SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
     steps:
       - uses: actions/checkout@v6
 
@@ -100,14 +102,51 @@ jobs:
         if: ${{ inputs.rechunker == 'chunkah' }}
         run: sudo --preserve-env=PATH $(which just) build-chunkah
 
-      - name: Push
-        id: push
-        uses: pocketblue/actions/container-push@main
+      - name: Install Cosign
+        if: ${{ env.SIGNING_KEY != '' }}
+        uses: sigstore/cosign-installer@v4.1.1
+
+      - name: Login to registry
         env:
-          latest: ${{ inputs.latest }}
           username: ${{ env.REGISTRY_USERNAME }}
           password: ${{ secrets.REGISTRY_TOKEN || secrets.GITHUB_TOKEN }}
-          registry: ${{ env.PB_REGISTRY }}
-          signing_key: ${{ secrets.SIGNING_KEY }}
-          name: ${{ env.TARGET_IMAGE_NAME }}
-          tag: ${{ env.PB_TAG }}
+        run: |
+          sudo podman login --username $username --password $password $PB_REGISTRY
+          echo "$password" | docker login -u $username --password-stdin $PB_REGISTRY # for cosign
+
+      - name: Push to registry
+        id: push
+        run: |
+          # retry 3 times
+          function push {
+            img=$1
+
+            n=0
+            until [ "$n" -ge 3 ]; do
+              sudo podman push --digestfile=/tmp/digestfile $img && break
+              n=$((n+1))
+              sleep 10
+            done
+
+            if [ "$n" -ge 3 ]; then
+              exit 1
+            fi
+          }
+
+          # HACK: push twice as a workaround to push rechunk annotations
+          push "$PB_REGISTRY/$TARGET_IMAGE_NAME:$PB_TAG"
+          push "$PB_REGISTRY/$TARGET_IMAGE_NAME:$PB_TAG"
+
+          echo "digest=$(< /tmp/digestfile)" | tee "${GITHUB_OUTPUT}"
+
+          # create and push the :latest tag
+          if [ "${{ inputs.latest }}" == "true" ]; then
+            sudo podman image tag $PB_REGISTRY/$TARGET_IMAGE_NAME:$PB_TAG $PB_REGISTRY/$TARGET_IMAGE_NAME:latest
+            push $PB_REGISTRY/$TARGET_IMAGE_NAME:latest
+            push $PB_REGISTRY/$TARGET_IMAGE_NAME:latest
+          fi
+
+      - name: Sign with cosign
+        if: ${{ env.SIGNING_KEY != '' }}
+        run: |
+          cosign sign -y --new-bundle-format=false --use-signing-config=false --key env://SIGNING_KEY "$PB_REGISTRY/$TARGET_IMAGE_NAME@${{ steps.push.outputs.digest }}"
