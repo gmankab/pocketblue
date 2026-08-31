@@ -1,9 +1,11 @@
 mount_configuration: "units"
+split: true
 partition_table:
   type: "gpt"
   sector_size: 4096
   partitions:
     - size: "256 MiB"
+      filename: fedora_efi.raw
       type: "C12A7328-F81F-11D2-BA4B-00A0C93EC93B" # EFI system partition
       payload_type: "filesystem"
       payload:
@@ -14,6 +16,7 @@ partition_table:
         fstab_freq: 0
         fstab_passno: 2
     - size: "6 GiB"
+      filename: fedora_rootfs.raw
       type: "0FC63DAF-8483-4772-8E79-3D69D8477DE4" # Linux Filesystem
       payload_type: "btrfs"
       payload:
