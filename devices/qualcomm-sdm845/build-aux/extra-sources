@@ -1,4 +1,4 @@
-images/u-boot-oneplus-enchilada.img https://github.com/fedora-remix-mobility/u-boot/releases/download/fedora-mobility-v0.0.1/uboot-sdm845-oneplus-enchilada.img ea0bb4d828f37704c84dbbcda5310578f53496f0809598c9d15d1606f0d30907
-images/u-boot-oneplus-fajita.img https://github.com/fedora-remix-mobility/u-boot/releases/download/fedora-mobility-v0.0.1/uboot-sdm845-oneplus-fajita.img 6258837bf4d08db01928867c662624bd2e6f268e5d4d773a524ae67b0a59e17f
-images/u-boot-xiaomi-beryllium-ebbg.img https://github.com/pocketblue/u-boot-builder/releases/download/2026-01-23/u-boot-xiaomi-beryllium-ebbg.img 9a308e7be2035082e1bdb1ee3c2df33b4783134d0ba22a3f6e78c15c073aaa95
-images/u-boot-xiaomi-beryllium-tianma.img https://github.com/pocketblue/u-boot-builder/releases/download/2026-01-23/u-boot-xiaomi-beryllium-tianma.img eb8c703a26d6099c279622a3c4486ebe8efe684fc8732d5c46e37e4ef306a849
+images/u-boot-oneplus-enchilada.img https://github.com/gmankab/u-boot/releases/download/2026-10-09/u-boot-oneplus-enchilada.img 06b8d288a1c48feb8c83903e205ae16b10c540b9929f65485959105d34dedcb6
+images/u-boot-oneplus-fajita.img https://github.com/gmankab/u-boot/releases/download/2026-10-09/u-boot-oneplus-fajita.img 8ed96c53d7b0d41d7bd64a15b8814c00ac68e56142e6cb2b37f3a39a1a39843e
+images/u-boot-xiaomi-beryllium-ebbg.img https://github.com/gmankab/u-boot/releases/download/2026-10-09/u-boot-xiaomi-beryllium-ebbg.img 1676135eb48d19882d426aea3d0c46f0a8d53ca74fb5511862b5ab8168034230
+images/u-boot-xiaomi-beryllium-tianma.img https://github.com/gmankab/u-boot/releases/download/2026-10-09/u-boot-xiaomi-beryllium-tianma.img 9e6380b78cb76b2f066368c75e0158183c77d8664e18f913017318c4602b417d
