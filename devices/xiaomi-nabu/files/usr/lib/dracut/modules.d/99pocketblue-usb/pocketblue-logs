@@ -1,0 +1,8 @@
+#!/bin/bash
+set -x
+uname -a
+cat /proc/cmdline
+ls -l /dev/disk/by-*
+dmesg
+journalctl --no-pager -b -o short-monotonic
+cat /run/initramfs/rdsosreport.txt
