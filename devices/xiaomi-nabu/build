@@ -36,4 +36,11 @@ dnf -y remove \
     kernel-headers
 rm -rf /usr/lib/modules/*
 dnf -y install kernel
+dnf -y copr enable gmanka/test
+dnf -y install \
+  kernel-7.0.0-2.gserial.sm8150.fc45 \
+  kernel-core-7.0.0-2.gserial.sm8150.fc45 \
+  kernel-modules-7.0.0-2.gserial.sm8150.fc45 \
+  kernel-modules-core-7.0.0-2.gserial.sm8150.fc45 \
+  kernel-modules-extra-7.0.0-2.gserial.sm8150.fc45
 rm -r /boot/dtb
