@@ -20,7 +20,6 @@ postprocess:
     set -euo pipefail
 
     source devices/{{device}}/build-aux/device.conf
-    export CONF_INSTALL_DTB=${install_dtb:-}
     export CONF_BUILD_EROFS=${build_erofs:-false}
 
     export OUTPUT=./output
