@@ -43,12 +43,13 @@ ln -sf /var/lib/firmware-extract /usr/lib/firmware/updates
 
 # Audio
 
+dnf -y copr enable gmanka/test
 dnf -y install \
     alsa-utils \
     pipewire \
     pipewire-alsa \
     pipewire-pulseaudio \
-    alsa-ucm-mobility-sdm845 \
+    alsa-ucm-mobility-sdm845-0:0^20260510git1b8d290 \
     q6voiced
 
 systemctl enable \
@@ -66,7 +67,8 @@ systemctl mask \
 dnf -y install \
     ath10k-shutdown \
     mobility-tweaks \
-    msm-modem-uim-selection
+    msm-modem-uim-selection \
+    sdm845-firmware-symlinks
 
 systemctl enable \
     msm-modem-uim-selection.service
@@ -82,5 +84,8 @@ dnf -y remove \
     kernel-modules-extra \
     kernel-headers
 rm -rf /usr/lib/modules/*
-dnf -y install kernel kernel-modules-extra
+dnf -y install \
+  kernel-7.1.13-0.sdm845.gserial.fc45 \
+  kernel-modules-extra-7.1.13-0.sdm845.gserial.fc45
+
 rm -rf /boot/dtb
