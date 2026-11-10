@@ -1,0 +1,4 @@
+kargs = [
+    "rd.systemd.debug_shell=ttyGS0",
+    "systemd.debug_shell=ttyGS0",
+]
