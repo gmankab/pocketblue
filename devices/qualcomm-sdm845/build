@@ -66,7 +66,8 @@ systemctl mask \
 dnf -y install \
     ath10k-shutdown \
     mobility-tweaks \
-    msm-modem-uim-selection
+    msm-modem-uim-selection \
+    sdm845-firmware-symlinks
 
 systemctl enable \
     msm-modem-uim-selection.service
@@ -82,5 +83,9 @@ dnf -y remove \
     kernel-modules-extra \
     kernel-headers
 rm -rf /usr/lib/modules/*
-dnf -y install kernel kernel-modules-extra
+dnf -y copr enable gmanka/test
+dnf -y install \
+  kernel-7.1.13-7.sdm845.fc45 \
+  kernel-modules-extra-7.1.13-7.sdm845.fc45
+
 rm -rf /boot/dtb
